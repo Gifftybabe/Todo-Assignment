@@ -1,3 +1,10 @@
+// Utility function
+function uuid() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+        return v.toString(16);
+    });
+}
 
 // CREATE TODO FUNCTION
 /*
@@ -6,11 +13,21 @@
 */
 
 const DB_NAME = 'todo_db';
-const todoInput = document.querySelector('#todo-input');
 
 const createTodo = () => {
+    const todoInput = document.querySelector('#todo-input');
+    const formMessageSpan = document.querySelector("#form-message");
+
     if (!todoInput.value) {
-        return showMessage("Todo is required")
+        formMessageSpan.innerHTML = "Todo is empty.";
+        formMessageSpan.classList.remove("hidden");
+        formMessageSpan.classList.add("text-xs", "text-red-400");
+
+        setTimeout(() => {
+            formMessageSpan.classList.add("hidden");
+        }, 5000);
+
+        return;
     }
 
     const newTodo = {
@@ -26,9 +43,7 @@ const createTodo = () => {
    // add to ls
    localStorage.setItem(DB_NAME, JSON.stringify(new_todo_db));
     fetchTodos();
-
-    resetFormInput();
-
+    todoInput.value = "";
 };
 
 // READ TODO FUNCTION
@@ -95,7 +110,7 @@ const handleEditMode = (id) => {
     if (!todo_to_update) {
         return;
     }
-
+    const todoInput = document.querySelector('#todo-input');
     todoInput.value = todo_to_update.title;
 
     const updateTodoBtn = document.querySelector('#update_todo_btn');
@@ -107,9 +122,17 @@ const handleEditMode = (id) => {
 };
 
 const updateTodo = () => {
-
+    const todoInput = document.querySelector('#todo-input');
     if (!todoInput.value) {
-        showMessage("Todo cannot be empty")
+        const formMessageSpan = document.querySelector("#form-message");
+        formMessageSpan.innerHTML = "Please select Todo to update.";
+        formMessageSpan.classList.remove("hidden");
+        formMessageSpan.classList.add("text-xs", "text-red-400");
+
+        setTimeout(() => {
+            formMessageSpan.classList.add("hidden");
+        }, 5000);
+
         return;
     }
 
@@ -126,8 +149,7 @@ const updateTodo = () => {
 
     localStorage.setItem(DB_NAME, JSON.stringify(updated_todo_db));
     fetchTodos();
-    resetFormInput();
-
+    todoInput.value = '';
 
     updateTodoBtn.classList.add("hidden"); // hide update todo btn
 
