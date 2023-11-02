@@ -106,9 +106,55 @@ const fetchTodos = () => {
 const handleEditMode = (id) => {
     const todo_db = JSON.parse(localStorage.getItem(DB_NAME)) || [];
     const todo_to_update = todo_db.find((todo) => todo.id === id);
+
     if (!todo_to_update) {
         return;
     }
+    const todoInput = document.querySelector('#todo-input');
+    todoInput.value = todo_to_update.title;
+
+    const updateTodoBtn = document.querySelector('#update_todo_btn');
+    updateTodoBtn.classList.remove("hidden"); //show update todo btn
+    updateTodoBtn.setAttribute("todo_id_to_update", id);
+
+    const addTodoBtn = document.querySelector('#add_todo_btn');
+    addTodoBtn.classList.add("hidden"); // hide add todo btn
+};
+
+const updateTodo = () => {
+    const todoInput = document.querySelector('#todo-input');
+    if (!todoInput.value) {
+        const formMessageSpan = document.querySelector("#form-message");
+        formMessageSpan.innerHTML = "Please select Todo to update.";
+        formMessageSpan.classList.remove("hidden");
+        formMessageSpan.classList.add("text-xs", "text-red-400");
+
+        setTimeout(() => {
+            formMessageSpan.classList.add("hidden");
+        }, 5000);
+
+        return;
+    }
+
+    const updateTodoBtn = document.querySelector('#update_todo_btn');
+    const todo_id_to_update = updateTodoBtn.getAttribute("todo_id_to_update");
+    const todo_db = JSON.parse(localStorage.getItem(DB_NAME)) || [];
+    const updated_todo_db = todo_db.map((todo) => {
+        if (todo.id === todo_id_to_update) {
+            return { ...todo, title: todoInput.value };
+        } else {
+            return todo;
+        }
+    });
+
+    localStorage.setItem(DB_NAME, JSON.stringify(updated_todo_db));
+    fetchTodos();
+    todoInput.value = '';
+
+    updateTodoBtn.classList.add("hidden"); // hide update todo btn
+
+    const addTodoBtn = document.querySelector('#add_todo_btn');
+    addTodoBtn.classList.remove("hidden"); // show update todo btn
 };
 
 // DELETE TODO FUNCTION
