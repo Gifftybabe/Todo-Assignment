@@ -19,7 +19,7 @@ This is a simple Todo List application built with JavaScript, HTML, and CSS. The
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/todo-list-app.git
+   git clone https://github.com/Gifftybabe/Todo-Assignment.git
    ```
 
 2. Open the `index.html` file in your preferred web browser.
