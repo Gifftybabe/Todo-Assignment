@@ -9,32 +9,37 @@ const DB_NAME = 'todo_db';
 const todoInput = document.querySelector('#todo-input');
 
 const createTodo = () => {
-    if (!todoInput.value) {
-        return showMessage("Todo is required")
-    }
+    try {
+        if (!todoInput.value) {
+            return showMessage("Todo title cannot be empty");
+        }
 
-    const newTodo = {
-        id: uuid(),
-        title: todoInput.value,
-        created_at: Date.now(),
+        const newTodo = {
+            id: uuid(),
+            title: todoInput.value,
+            created_at: Date.now(),
+        };
+
+       // check for ls
+       const todo_db = getDb(DB_NAME);
+       //add new todo db array
+       const new_todo_db = [...todo_db, newTodo];
+       // add to ls
+        setDb(DB_NAME, new_todo_db);
+        fetchTodos();
+
+        resetFormInput();
+    } catch (error) {
+        showMessage(error.message);
     };
 
-   // check for ls
-   const todo_db = JSON.parse(localStorage.getItem(DB_NAME)) || [];
-   //add new todo db array
-   const new_todo_db = [...todo_db, newTodo];
-   // add to ls
-   localStorage.setItem(DB_NAME, JSON.stringify(new_todo_db));
-    fetchTodos();
-
-    resetFormInput();
 
 };
 
 // READ TODO FUNCTION
 const fetchTodos = () => {
     const todoListContainer = document.querySelector('#todo-lists-container');
-    const todo_db = JSON.parse(localStorage.getItem(DB_NAME)) || [];
+    const todo_db = getDb(DB_NAME);
     const noTodo = todo_db.length === 0;
     if (noTodo) {
         todoListContainer.innerHTML = `<div id="noTodos" class="p-6">
@@ -65,7 +70,7 @@ const fetchTodos = () => {
         .map((todo) => {
         return `
         <div class="group flex justify-between py-3 hover:bg-slate-50 px-2.5 rounded-lg">
-        <a href="">${todo.title}</a>
+        <a href="/preview.html">${todo.title}</a>
         <section class="gap-3 hidden group-hover:flex ">
            <button onclick="handleEditMode('${todo.id}')">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-green-600">
@@ -89,7 +94,7 @@ const fetchTodos = () => {
 
 // UPDATE TODO FUNCTION
 const handleEditMode = (id) => {
-    const todo_db = JSON.parse(localStorage.getItem(DB_NAME)) || [];
+    const todo_db = getDb(DB_NAME);
     const todo_to_update = todo_db.find((todo) => todo.id === id);
 
     if (!todo_to_update) {
@@ -109,13 +114,13 @@ const handleEditMode = (id) => {
 const updateTodo = () => {
 
     if (!todoInput.value) {
-        showMessage("Todo cannot be empty")
+        showMessage("Please select a todo");
         return;
     }
 
     const updateTodoBtn = document.querySelector('#update_todo_btn');
     const todo_id_to_update = updateTodoBtn.getAttribute("todo_id_to_update");
-    const todo_db = JSON.parse(localStorage.getItem(DB_NAME)) || [];
+    const todo_db = getDb(DB_NAME);
     const updated_todo_db = todo_db.map((todo) => {
         if (todo.id === todo_id_to_update) {
             return { ...todo, title: todoInput.value };
@@ -124,8 +129,9 @@ const updateTodo = () => {
         }
     });
 
-    localStorage.setItem(DB_NAME, JSON.stringify(updated_todo_db));
+    setDb(DB_NAME, updated_todo_db);
     fetchTodos();
+
     resetFormInput();
 
 
@@ -146,11 +152,11 @@ const deleteTodo = (id) => {
       }).then ((res) => {
             if(res.isConfirmed) {
                 // Get todos ls
-                const todo_db = JSON.parse(localStorage.getItem(DB_NAME)) || [];
+                const todo_db = getDb(DB_NAME);
                 // Filter out the todos that doesn't match the id
                 const new_todo_db = todo_db.filter((todo) => todo.id !== id);
                 // Set the new todos without the the todo that matches the id to the ls
-                localStorage.setItem(DB_NAME, JSON.stringify(new_todo_db));
+                setDb(DB_NAME, new_todo_db);
 
                 fetchTodos();
         } else {
