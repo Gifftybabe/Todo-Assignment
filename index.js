@@ -14,21 +14,38 @@ const updateTodoBtn = document.querySelector("#update_todo_btn");
 const addTodoBtn = document.querySelector("#add_todo_btn");
 
 // Create Todo
-const createTodo =  (e) => {
-    e.preventDefault();
-    try {
-    if(!todoInput.value){
+// const createTodo =  (e) => {
+//     e.preventDefault();
+//     try {
+//     if(!todoInput.value){
 
-        showMessage("Todo title cannot be empty");
-        return;
-    }
+//         showMessage("Todo title cannot be empty");
+//         return;
+//     }
 
 
-    const newTodo = {
-        id: uuid(),
-        title: todoInput.value,
-        date: Date.now(),
-    };
+//     const newTodo = {
+//         id: uuid(),
+//         title: todoInput.value,
+//         date: Date.now(),
+//     };
+
+const createTodo = (e) => {
+  e.preventDefault();
+  try {
+      const trimmedTitle = todoInput.value.trim();
+
+      if (!trimmedTitle) {
+          showMessage("Todo title cannot be empty");
+          return;
+      }
+
+      const newTodo = {
+          id: uuid(),
+          title: trimmedTitle,
+          date: Date.now(),
+      };
+
 
    // check for ls
 

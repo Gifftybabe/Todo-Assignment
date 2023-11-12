@@ -146,7 +146,24 @@ const pending = function () {
   } else {
     taskStatus.textContent = "Pending";
     taskStatus.classList.remove("bg-green-700");
-    taskStatus.classList.add("bg-");
+    taskStatus.classList.add("bg-red-300");
   }
+
+  // Store checkbox state in local storage
+  localStorage.setItem("checkboxState", checkTask.checked);
 };
-pending();
+
+// Add event listener for DOMContentLoaded
+document.addEventListener("DOMContentLoaded", function () {
+  // Retrieve checkbox state from local storage
+  const checkboxState = localStorage.getItem("checkboxState");
+  const checkTask = document.querySelector("#complete");
+
+  if (checkboxState === "true") {
+    // Set the checkbox state
+    checkTask.checked = true;
+    // Update the display based on the stored state
+    pending();
+  }
+});
+
